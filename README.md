@@ -2,12 +2,14 @@
 Auto-ropper is a tool that aims to automate the exploitation of ROP. Its goal is to become a tool that no longer requires user interaction.
 
 # Installation
-For now, you have to manually download pwn tools. This can be done by doing the following with Python3:
+You need :
+* [Python 3](https://www.python.org/)
+* [`pwntools`](https://docs.pwntools.com/en/stable/)
+
+## With pip
+Just do:
 ```
-$ apt-get update
-$ apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential
-$ python3 -m pip install --upgrade pip
-$ python3 -m pip install --upgrade pwntools
+$ pip install pwn
 ```
 
 # Usage
@@ -32,5 +34,5 @@ Once it's done, restart the program and you should have a shell. Happy hacking! 
 
 # Contributing
 Thanks to for helping me in this project:<br>
-RedAmber<br>
-Tim-ats-d
+@Red-Amber
+@Tim-ats-d
