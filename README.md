@@ -4,7 +4,7 @@ Auto-ropper is a tool that aims to automate the exploitation of ROP. Its goal is
 # Installation
 You need :
 * [Python 3](https://www.python.org/)
-* [`pwntools`](https://docs.pwntools.com/en/stable/)
+* [pwntools](https://docs.pwntools.com/en/stable/)
 
 ## With pip
 Just do:
