@@ -5,15 +5,16 @@ Auto-ropper is a tool that aims to automate the exploitation of ROP. Its goal is
 You need :
 * [Python 3](https://www.python.org/)
 * [pwntools](https://docs.pwntools.com/en/stable/)
+* [BeautifulSoup](https://pypi.org/project/beautifulsoup4/)
 
 ## With pip
 Just do:
 ```
 $ pip install pwn
+$ pip install beautifulsoup4
 ```
 
 # Usage
-Since this is not the v1, you will have to do some stuff manually.<br>
 Before starting the program, you'll have to do the following:
 ```bash
 sudo sysctl -w kernel.core_pattern=core
@@ -25,12 +26,13 @@ Then, you have to edit the binary location and name.
 elf = ELF("./tests/ret") # edit the PATH to your binary location.
 ```
 Then, you can run it.<br>
-<br>
-Once at least two functions have been leaked, you can manually check on [blukat](https://libc.blukat.me/), download the right libc and then edit.
-```py
-LIBC = "./libc/libc6_2.31-0ubuntu9.2_amd64.so" # edit the PATH to your libc location.
-```
+
 Once it's done, restart the program and you should have a shell. Happy hacking! :-) 
+
+# Didn't pwned...
+There can be various reasons as to why you didn't got a shell. The first one being, it didn't leaked the address correctly. You should try to run again the program (it happens during test, this is the only "fix" i found)<br>
+Another reason can be it either didn't found a libc, or the libc doesn't seem pwnable<br>
+The last reason is, you might just try to pwn something that is either not pwnable or that my tool can't pwn!
 
 # Contributing
 Thanks to for helping me in this project:<br>
