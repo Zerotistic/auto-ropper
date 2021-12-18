@@ -1,4 +1,4 @@
-# Auto-Ropper
+# Auto-Ropper V2
 Auto-ropper is a tool that aims to automate the exploitation of ROP. Its goal is to become a tool that no longer requires user interaction.
 
 # Installation
@@ -36,6 +36,13 @@ mode:
 ```
 
 Once you've started the program, you should wait around 15 seconds (depends on your internet) and you'll have a shell. Happy hacking! :-) 
+# Preview
+Here is what it should looks like when using Auto-Ropper V2<br>
+[![asciicast](https://asciinema.org/a/X8Hqy0rXJr613rNfHjfmrJnS8.svg)](https://asciinema.org/a/X8Hqy0rXJr613rNfHjfmrJnS8)
+
+# When and what will be V3?
+V3 will include a session save as well as a GUI. While it *should* also currently works on Windows, V3 will make sure it does!<br>
+I'm planning something big for the V3, but you can still refer to the `Bugs / Update` section if you want something specific!
 
 # Didn't pwned...
 There can be various reasons as to why you didn't got a shell. 
