@@ -1,3 +1,10 @@
+# V2
+It now has a parser so you don't have to edit the py file anymore. <br>
+It's also able to attack remotly and localy.<br>
+Dealt with some annoying issue in the binary test (added `setvbuf()`)<br>
+In the future a session save will be added and i'll work on improving the pwning.
+
+
 # V1
 It is now able to do pretty much everything by itself:
 * Leak offset
