@@ -35,7 +35,7 @@ mode:
   {local,remote,gui}
 ```
 
-Once you've started the program, you should wait around 15 seconds (depends on the internet) and you'll have a shell. Happy hacking! :-) 
+Once you've started the program, you should wait around 15 seconds (depends on your internet) and you'll have a shell. Happy hacking! :-) 
 
 # Didn't pwned...
 There can be various reasons as to why you didn't got a shell. 
