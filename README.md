@@ -19,7 +19,10 @@ Before starting the program, you'll have to do the following:
 ```bash
 sudo sysctl -w kernel.core_pattern=core
 ```
-help page
+Help page `python3 rop.py -h`<br>
+There's three option, two are used for CLI, last one is to start a GUI (not available at the moment, will be later.)
+You can see each mode option by doing `python3 rop.py <mode> -h`
+
 ```
 usage: rop.py [-h] {local,remote,gui} ...
 
@@ -32,7 +35,7 @@ mode:
   {local,remote,gui}
 ```
 
-Once it's done, restart the program and you should have a shell. Happy hacking! :-) 
+Once you've started the program, you should wait around 15 seconds (depends on the internet) and you'll have a shell. Happy hacking! :-) 
 
 # Didn't pwned...
 There can be various reasons as to why you didn't got a shell. 
@@ -43,7 +46,8 @@ There can be various reasons as to why you didn't got a shell.
 # Bugs / Update
 If you were to find a bug, please do create an issue.<br>
 If you want to add something, you can fork an create a push request, or you can create an issue. If it is an issue, i might take some time, or refuse to do it myself. 
+
 # Contributing
 Thanks to those people for helping me in this project:<br>
-@Red-Amber
+@Red-Amber <br>
 @Tim-ats-d
