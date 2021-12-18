@@ -3,5 +3,7 @@
 - ~~Add libc finding automatically~~
 - ~~Download libc automatically~~
 - Add a database for session save
-- Add GUI and CLI option
-- Add an option to pwn binary from ssh and open port
+- Add GUI ~~and CLI option~~
+- Add an option to pwn binary from ssh ~~and open port~~
+- Improve the pwning
+- Add a LIBC option in case need of a specific libc
