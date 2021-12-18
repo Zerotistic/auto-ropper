@@ -18,7 +18,11 @@ class Exploit:
 		self.url_download_libc = "https://libc.blukat.me/d/"
 		os.path.join(os.getcwd(), "libc")
 		if self.ip is not None and self.port is not None:
-			self.p = remote(self.ip,self.port)
+			try:
+				self.p = remote(self.ip,self.port)
+			except:
+				log.warning("Couldn't connect... Aborting.")
+				exit(-1)
 		else:
 			self.p = self.elf.process()
 		context.arch = arch
