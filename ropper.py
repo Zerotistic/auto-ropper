@@ -25,9 +25,7 @@ logging.getLogger("angr.project").disabled=True
 
 log = logging.getLogger(__name__)
 
-is_printable = False
-
-#context.log_level = 'debug'
+#is_printable = True
 
 class Database():
 	def __init__(self, binary, aslr):
@@ -73,9 +71,10 @@ class Database():
 		self.db.commit()
 
 class Exploit(Database):
-	def __init__(self, binary, arch="amd64", ip=None, port=None):
+	def __init__(self, binary, arch="amd64", is_printable=False, ip=None, port=None):
 		self.ip = ip 
 		self.port = port
+		self.is_printable = is_printable
 		self.binary_name = binary
 		self.elf = ELF(binary)
 		self.offset_leaking = self.elf.process()
@@ -95,7 +94,7 @@ class Exploit(Database):
 				exit(-1)
 		else:
 			self.p = self.elf.process()
-		context.arch = arch
+		context.arch = "amd64"
 
 	def recovery(self, instance, message, *args, exception=Exception, callback=lambda: None):
 		try:
@@ -119,7 +118,7 @@ class Exploit(Database):
 
 				log.info("Found vulnerable state.")
 
-				if is_printable:
+				if self.is_printable:
 					log.info("Constraining input to be printable")
 					for c in user_input.chop(8):
 						constraint = claripy.And(c > 0x2F, c < 0x7F)
@@ -346,11 +345,13 @@ if __name__ == "__main__":
 	local_attack = mode.add_parser("local", parents=[parser], add_help=False, description="For local pwning")
 	local_attack.add_argument("-b","--binary",help="Path to binary")
 	local_attack.add_argument("-a","--arch",help="Arch on which the binary is. Default is amd64.\n 'aarch64': {'bits': 64, 'endian': 'little'}\n 'alpha': {'bits': 64, 'endian': 'little'}\n 'amd64': {'bits': 64, 'endian': 'little'}\n 'arm': {'bits': 32, 'endian': 'little'}\n 'avr': {'bits': 8, 'endian': 'little'}\n 'cris': {'bits': 32, 'endian': 'little'}\n 'i386': {'bits': 32, 'endian': 'little'}\n 'ia64': {'bits': 64, 'endian': 'big'}\n 'm68k': {'bits': 32, 'endian': 'big'}\n 'mips': {'bits': 32, 'endian': 'little'}\n 'mips64': {'bits': 64, 'endian': 'little'}\n 'msp430': {'bits': 16, 'endian': 'little'}\n 'none': {}, 'powerpc': {'bits': 32, 'endian': 'big'}\n 'powerpc64': {'bits': 64, 'endian': 'big'}\n 'riscv': {'bits': 32, 'endian': 'little'}\n 's390': {'bits': 32, 'endian': 'big'}\n 'sparc': {'bits': 32, 'endian': 'big'}\n 'sparc64': {'bits': 64, 'endian': 'big'}\n 'thumb': {'bits': 32, 'endian': 'little'}\n 'vax': {'bits': 32, 'endian': 'little'}")
+	local_attack.add_argument("-z","--printable",help="Constrain input to be printable")
 	local_attack.set_defaults(which="local")
 	
 	remote_attack = mode.add_parser("remote", parents=[parser], add_help=False, description="For remote pwning")
 	remote_attack.add_argument("-b","--binary",help="Path to binary")
 	remote_attack.add_argument("-a","--arch",help="Arch on which the binary is")
+	remote_attack.add_argument("-z","--printable",help="Constrain input to be printable")
 	remote_attack.add_argument("-i","--ip",help="IP of remote victim")
 	remote_attack.add_argument("-p","--port",help="Port of remote victim")
 	remote_attack.set_defaults(which="remote")
@@ -365,9 +366,17 @@ if __name__ == "__main__":
 			log.warning("No binary given... Please provide one.")
 		else:
 			if args.arch:
-				local_exploit = Exploit(args.binary, args.arch)
-				local_exploit.main()
+				if args.printable:
+					local_exploit = Exploit(args.binary, args.arch, args.printable)
+					local_exploit.main()
+				else:
+					local_exploit = Exploit(args.binary, args.arch)
+					local_exploit.main()
+			elif args.printable:
+					local_exploit = Exploit(args.binary, args.arch, args.printable)
+					local_exploit.main()
 			else:
+				#if args.is_printable
 				local_exploit = Exploit(args.binary)
 				local_exploit.main()
 
@@ -375,8 +384,20 @@ if __name__ == "__main__":
 		if not args.binary and not args.ip and not args.port:
 			log.warning("Please verify that you gave the binary path, the ip and port for a remote attack.")
 		else:
-			remote_exploit = Exploit(args.binary, args.ip, int(args.port))
-			remote_exploit.main()
+			if args.arch:
+				if args.printable:
+					local_exploit = Exploit(args.binary, args.arch, args.printable, args.ip, int(args.port))
+					local_exploit.main()
+				else:
+					local_exploit = Exploit(args.binary, args.arch, False , args.ip, int(args.port))
+					local_exploit.main()
+			elif args.printable:
+					local_exploit = Exploit(args.binary, args.arch, args.printable, args.ip, int(args.port))
+					local_exploit.main()
+			else:
+				#if args.is_printable
+				local_exploit = Exploit(args.binary)
+				local_exploit.main()
 
 	if args.which == "gui":
 		print("gui")
