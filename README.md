@@ -15,11 +15,6 @@ $ pip install beautifulsoup4
 ```
 
 # Usage
-Before starting the program, you'll have to do the following:
-```bash
-sudo sysctl -w kernel.core_pattern=core
-```
-This name the core file generated from the crash as `core`, which is the name of the file that Auto-Ropper will be looking for.<br><br>
 Help page `python3 rop.py -h`<br>
 There's three option, two are used for CLI, last one is to start a GUI (not available at the moment, will be later.)
 You can see each mode option by doing `python3 rop.py <mode> -h`
