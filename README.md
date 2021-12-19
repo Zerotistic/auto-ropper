@@ -1,4 +1,4 @@
-# Auto-Ropper V2
+# Auto-Ropper V0.3
 Auto-ropper is a tool that aims to automate the exploitation of ROPchain. Its goal is to become a tool that no longer requires user interaction.
 
 # Installation
@@ -36,9 +36,10 @@ Once you've started the program, you should wait around 15 seconds (depends on y
 Here is what it should looks like when using Auto-Ropper V2<br>
 [![asciicast](https://asciinema.org/a/X8Hqy0rXJr613rNfHjfmrJnS8.svg)](https://asciinema.org/a/X8Hqy0rXJr613rNfHjfmrJnS8)
 
-# When and what will be V3?
-V3 will include a session save as well as a GUI. While it *should* also currently works on Windows, V3 will make sure it does!<br>
-I'm planning something big for the V3, but you can still refer to the `Bugs / Update` section if you want something specific!
+# When and what will be V1?
+I don't know when it'll be. But it'll be for sure before june.<br>
+V1 will include a session save as well as a GUI. While it *should* also currently works on Windows, V1 will make sure it does!<br>
+I'm planning something big for the V1, but you can still refer to the `Bugs / Update` section if you want something specific!
 
 # Didn't pwned...
 There can be various reasons as to why you didn't got a shell. 
