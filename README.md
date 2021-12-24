@@ -41,7 +41,7 @@ I don't know when it'll be. But it'll be for sure before june.<br>
 V1 will include a session save as well as a GUI. While it *should* also currently works on Windows, V1 will make sure it does!<br>
 I'm planning something big for the V1, but you can still refer to the `Bugs / Update` section if you want something specific!
 
-# Didn't pwned...
+# Didn't pwn...
 There can be various reasons as to why you didn't got a shell. 
 1) The first one being, it didn't leaked the address correctly. You should try to run again the program 
 2) Another reason can be it either didn't found a libc, or the libc doesn't seem pwnable
