@@ -33,7 +33,7 @@ mode:
 
 Once you've started the program, you should wait around 15 seconds (depends on your internet) and you'll have a shell. Happy hacking! :-) 
 # Preview
-Here is what it should looks like when using Auto-Ropper V2<br>
+Here is what it should looks like when using Auto-Ropper V1<br>
 [![asciicast](https://asciinema.org/a/X8Hqy0rXJr613rNfHjfmrJnS8.svg)](https://asciinema.org/a/X8Hqy0rXJr613rNfHjfmrJnS8)
 
 # When and what will be V1?
