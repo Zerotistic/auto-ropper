@@ -2,16 +2,9 @@
 Auto-ropper is a tool that aims to automate the exploitation of ROPchain. Its goal is to become a tool that no longer requires user interaction.
 
 # Installation
-You need :
-* [Python 3](https://www.python.org/)
-* [pwntools](https://docs.pwntools.com/en/stable/)
-* [BeautifulSoup](https://pypi.org/project/beautifulsoup4/)
-
-## With pip
-Just do:
+You can simply do:
 ```
-$ pip install pwn
-$ pip install beautifulsoup4
+$ pip install -r requirements.txt
 ```
 
 # Usage
