@@ -54,43 +54,8 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 
-	if args.which == "local":
-		if not args.binary:
-			log.warning("No binary given... Please provide one.")
-		else:
-			if args.arch:
-				if args.printable:
-					local_exploit = Exploit(args.binary, args.arch, args.printable)
-					local_exploit.main()
-				else:
-					local_exploit = Exploit(args.binary, args.arch)
-					local_exploit.main()
-			elif args.printable:
-					local_exploit = Exploit(args.binary, args.arch, args.printable)
-					local_exploit.main()
-			else:
-				#if args.is_printable
-				local_exploit = Exploit(args.binary)
-				local_exploit.main()
-
-	if args.which == "remote":
-		if not args.binary and not args.ip and not args.port:
-			log.warning("Please verify that you gave the binary path, the ip and port for a remote attack.")
-		else:
-			if args.arch:
-				if args.printable:
-					local_exploit = Exploit(args.binary, args.arch, args.printable, args.ip, int(args.port))
-					local_exploit.main()
-				else:
-					local_exploit = Exploit(args.binary, args.arch, False , args.ip, int(args.port))
-					local_exploit.main()
-			elif args.printable:
-					local_exploit = Exploit(args.binary, args.arch, args.printable, args.ip, int(args.port))
-					local_exploit.main()
-			else:
-				#if args.is_printable
-				local_exploit = Exploit(args.binary)
-				local_exploit.main()
-
-	if args.which == "gui":
-		print("gui")
+	if not args.binary:
+		log.warning("No binary given... Please provide one.")
+		exit(0)
+	attack = Exploit({k:v for k,v in args.__dict__.items() if v is not None})
+	attack.main()
