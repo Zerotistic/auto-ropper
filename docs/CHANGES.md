@@ -1,3 +1,7 @@
+# V0.4
+Optimized the code, added a database part although it is not currently used, it'll allow me to implement it in the future
+I also started working on the GUI part
+
 # V0.3
 The offset finding part is optimized as hell (use angr).<br>
 Started to add the database part. It'll probably be deleted later on. For now it works, but there might be some issues.
