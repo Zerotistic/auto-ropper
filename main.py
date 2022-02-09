@@ -54,8 +54,15 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 
-	if not args.binary:
+	if args.which == "gui":
+		root = tk.Tk()
+		app = Gui(root)
+		root.mainloop()
+	
+	elif not args.binary:
 		log.warning("No binary given... Please provide one.")
 		exit(0)
 	attack = Exploit({k:v for k,v in args.__dict__.items() if v is not None})
 	attack.main()
+	
+	
