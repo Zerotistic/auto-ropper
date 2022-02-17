@@ -4,7 +4,6 @@ import argparse
 from utils.gui import Gui
 from utils.exploit import Exploit
 import os
-import tkinter as tk
 
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
