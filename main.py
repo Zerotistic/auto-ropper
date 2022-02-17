@@ -4,6 +4,7 @@ import argparse
 from utils.gui import Gui
 from utils.exploit import Exploit
 import os
+import tkinter as tk
 
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
@@ -15,9 +16,6 @@ for loud_logger in loud_loggers:
 logging.getLogger("angr.project").disabled=True
 
 log = logging.getLogger(__name__)
-
-# implement later
-# is_printable = True
 
 if __name__ == "__main__":
 	
@@ -55,14 +53,10 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	if args.which == "gui":
-		root = tk.Tk()
-		app = Gui(root)
-		root.mainloop()
+		Gui()
 	
 	elif not args.binary:
 		log.warning("No binary given... Please provide one.")
 		exit(0)
 	attack = Exploit({k:v for k,v in args.__dict__.items() if v is not None})
 	attack.main()
-	
-	

@@ -2,13 +2,13 @@ import tkinter as tk
 import tkinter.font as tkFont
 import tkinter.messagebox 
 from tkinter.filedialog import askopenfilename
-
-from exploit import Exploit
+from pathlib import Path
+from .exploit import Exploit
 
 class Gui(Exploit):
-	def __init__(self, root):
-		self.root = root
-		self.args = {"is_printable_var": False, "binary_path": None, "libc_path": None, "mode": "local"}
+	def __init__(self):
+		self.root = tk.Tk()
+		self.args = {"is_printable": False, "binary": None, "libc": None, "mode": "local"}
 		self.main()
 
 	def main(self):
@@ -80,6 +80,8 @@ class Gui(Exploit):
 		dd_mode["justify"] = "center"
 		dd_mode.place(x=30,y=170,width=180,height=30) 
 
+		self.root.mainloop()
+
 	def set_mode(self, var):
 		self.args["mode"] = var
 		if self.args["mode"] == "remote":
@@ -105,16 +107,20 @@ class Gui(Exploit):
 		pass
 
 	def btn_run_exec(self):
-		if not self.args["bin_path"]: tkinter.messagebox.showinfo("Error cannot run",  "Please add a binary")
+		if not self.args["binary"]: tkinter.messagebox.showinfo("Error cannot run",  "Please add a binary")
 		elif not self.args["mode"] : tkinter.messagebox.showinfo("Error cannot run",  "Please add a mode (local, remote, ssh)")
-		attack = Exploit({k:v for k,v in self.args.__dict__.items() if v is not None})
+		self.root.destroy()
+		attack = Exploit({k:v for k,v in self.args.items() if v is not None})
 		attack.main()
 
+		
 	def btn_bin_exec(self):
-		self.args["bin_path"] = askopenfilename()
+		self.args["binary"] = askopenfilename()
+		self.args["binary"] = self.args["binary"].replace(str(Path("./").resolve()),"")[1:]
 
 	def btn_libc_exec(self):
-		self.args["libc_path"] = askopenfilename()
+		self.args["libc"] = askopenfilename()
+		self.args["libc"] = self.args["libc"].replace(str(Path("./").resolve()),"")[1:]
 
 	def checkbox_printable(self):
-		self.args["is_printable_var"] = not self.is_printable_var
+		self.args["is_printable"] = not self.is_printable_var
