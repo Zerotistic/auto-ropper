@@ -1,10 +1,13 @@
-import logging
 from pwn import *
+context.log_level = 'error'
+import logging
 import argparse
 from utils.gui import Gui
 from utils.exploit import Exploit
 import os
 
+# This is the basic configuration for logging. It sets the root logger to the INFO level and sets the
+# level of all loud_loggers to ERROR.
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
 
@@ -16,8 +19,11 @@ logging.getLogger("angr.project").disabled=True
 
 log = logging.getLogger(__name__)
 
+# The `if __name__ == "__main__":` is a python thing. It's a way to make sure that the code inside it
+# is only run when the script is run directly, and not when it's imported.
 if __name__ == "__main__":
 	
+	# This is the main function of the program. It will call the other functions in the correct order.
 	if os.path.exists(os.path.join(os.getcwd(), "libc")) == False:
 		os.makedirs(os.path.join(os.getcwd(), "libc"))
 	if os.path.exists(os.path.join(os.getcwd(), "database")) == False:

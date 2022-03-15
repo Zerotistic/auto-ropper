@@ -7,11 +7,26 @@ from .exploit import Exploit
 
 class Gui(Exploit):
 	def __init__(self):
+		"""
+		The __init__ function is the constructor for the class. 
+		
+		called when an instance of the class is created. 
+		
+		The __init__ function is used to initialize data. 
+		
+		The __init__ function is called automatically every time the class is being used to create a new
+		object
+
+		Here, it creates a dictionnary with default values.
+		"""
 		self.root = tk.Tk()
 		self.args = {"is_printable": False, "binary": None, "libc": None, "mode": "local"}
 		self.main()
 
 	def main(self):
+		"""
+		This function is used to create the GUI for the program.
+		"""
 		self.root.title("GUI")
 		width=228
 		height=311
@@ -83,6 +98,11 @@ class Gui(Exploit):
 		self.root.mainloop()
 
 	def set_mode(self, var):
+		"""
+		The set_mode function is used to set the mode of the program.
+		
+		:param var: the variable that will be set to the value of the argument
+		"""
 		self.args["mode"] = var
 		if self.args["mode"] == "remote":
 			self.remote_mode()
@@ -92,6 +112,9 @@ class Gui(Exploit):
 			self.clean_mode()
 	# to fix
 	def remote_mode(self):
+		"""
+		It creates a text box for the user to input the IP address and port number of the remote computer.
+		"""
 		self.ipvar = tk.StringVar()
 		self.portvar = tk.StringVar()
 		ip = tk.Entry(master=self.root, textvariable=self.ipvar, width = 10)
@@ -115,12 +138,22 @@ class Gui(Exploit):
 
 		
 	def btn_bin_exec(self):
+		"""
+		The user selects a binary file and the function returns the path to the binary file
+		"""
 		self.args["binary"] = askopenfilename()
 		self.args["binary"] = self.args["binary"].replace(str(Path("./").resolve()),"")[1:]
 
 	def btn_libc_exec(self):
+		"""
+		It opens a file dialog and asks the user to select a file.
+		"""
 		self.args["libc"] = askopenfilename()
 		self.args["libc"] = self.args["libc"].replace(str(Path("./").resolve()),"")[1:]
 
 	def checkbox_printable(self):
+		"""
+		The checkbox_printable function is a function that takes no arguments. It is called when the
+		checkbox is clicked. It toggles the value of the is_printable_var boolean and then returns nothing
+		"""
 		self.args["is_printable"] = not self.is_printable_var
