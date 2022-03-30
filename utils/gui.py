@@ -7,18 +7,6 @@ from .exploit import Exploit
 
 class Gui(Exploit):
 	def __init__(self):
-		"""
-		The __init__ function is the constructor for the class. 
-		
-		called when an instance of the class is created. 
-		
-		The __init__ function is used to initialize data. 
-		
-		The __init__ function is called automatically every time the class is being used to create a new
-		object
-
-		Here, it creates a dictionnary with default values.
-		"""
 		self.root = tk.Tk()
 		self.args = {"is_printable": False, "binary": None, "libc": None, "mode": "local"}
 		self.main()
@@ -101,7 +89,7 @@ class Gui(Exploit):
 		"""
 		The set_mode function is used to set the mode of the program.
 		
-		:param var: the variable that will be set to the value of the argument
+		:param var: the variable that will be set to the value of the parameter
 		"""
 		self.args["mode"] = var
 		if self.args["mode"] == "remote":
@@ -129,6 +117,7 @@ class Gui(Exploit):
 	def ssh_mode(self):
 		pass
 
+
 	def btn_run_exec(self):
 		if not self.args["binary"]: tkinter.messagebox.showinfo("Error cannot run",  "Please add a binary")
 		elif not self.args["mode"] : tkinter.messagebox.showinfo("Error cannot run",  "Please add a mode (local, remote, ssh)")
@@ -139,7 +128,7 @@ class Gui(Exploit):
 		
 	def btn_bin_exec(self):
 		"""
-		The user selects a binary file and the function returns the path to the binary file
+		It opens a file browser and asks the user to select a binary file.
 		"""
 		self.args["binary"] = askopenfilename()
 		self.args["binary"] = self.args["binary"].replace(str(Path("./").resolve()),"")[1:]
@@ -147,6 +136,7 @@ class Gui(Exploit):
 	def btn_libc_exec(self):
 		"""
 		It opens a file dialog and asks the user to select a file.
+		The file is then stored in the args dictionary.
 		"""
 		self.args["libc"] = askopenfilename()
 		self.args["libc"] = self.args["libc"].replace(str(Path("./").resolve()),"")[1:]
@@ -154,6 +144,6 @@ class Gui(Exploit):
 	def checkbox_printable(self):
 		"""
 		The checkbox_printable function is a function that takes no arguments. It is called when the
-		checkbox is clicked. It toggles the value of the is_printable_var boolean and then returns nothing
+		checkbox is clicked. It toggles the value of the is_printable_var variable
 		"""
 		self.args["is_printable"] = not self.is_printable_var

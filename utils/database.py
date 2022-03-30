@@ -3,12 +3,6 @@ import sqlite3
 
 class Database():
 	def __init__(self, binary, aslr):
-		"""
-		Create a database and check if the binary has already been pwned
-		
-		:param binary: The binary you want to analyze
-		:param aslr: whether or not the binary is ASLR enabled
-		"""
 		self.md5sum = pwnlib.util.hashes.md5filehex(binary)
 		self.aslr = aslr
 		self.db = sqlite3.connect('./database/database')
@@ -20,7 +14,7 @@ class Database():
 
 	def create_database(self):
 		"""
-		Create a database to store the information of the binary and the payloads
+		Create a database to store the binary information and payloads
 		"""
 		self.cursor.execute("DROP TABLE IF EXISTS binaryInfo")
 		self.cursor.execute("DROP TABLE IF EXISTS payload")
@@ -37,7 +31,7 @@ class Database():
 
 	def add_offset(self, offset):
 		"""
-		Add an offset to the binary's offset in the database
+		Add an offset to the binaryInfo table
 		
 		:param offset: The offset of the binary in the file
 		"""
@@ -53,11 +47,19 @@ class Database():
 		self.cursor.execute('UPDATE binaryInfo SET libc = ? WHERE md5sum = ?',(libc, self.md5sum))
 		self.db.commit()
 
+	def prep_md5sum(self):
+		"""
+		Insert the md5sum of the payload into the database
+		"""
+		request = "INSERT INTO payload (md5sum) VALUES (?)"
+		self.cursor.execute(request, (self.md5sum,))
+		self.db.commit()
+
 	def add_p1(self, p1):
 		"""
 		Add a payload to the database
 		
-		:param p1: The first parameter of the payload
+		:param p1: The first payload to be executed
 		"""
 		self.cursor.execute("UPDATE payload SET payload1 = ? WHERE md5sum = ?", (p1, self.md5sum))
 		self.db.commit()
@@ -70,11 +72,3 @@ class Database():
 		"""
 		self.cursor.execute("UPDATE payload SET payload2 = ? WHERE md5sum = ?", (p2, self.md5sum))
 		self.db.commit()
-	
-	def get_offset(self):
-		"""
-		The function will query the database for the offset of the payload with the md5sum of the payload
-		"""
-		self.cursor.execute("SELECT offset FROM payload WHERE md5sum = ?", (self.md5sum))
-		data = self.cursor.fetchall()
-		log.info(data)
