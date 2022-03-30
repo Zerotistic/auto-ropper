@@ -31,7 +31,7 @@ Here is what it should looks like when using Auto-Ropper V1<br>
 
 # When and what will be V1?
 I don't know when it'll be. But it'll be for sure before june.<br>
-V1 will include a session save as well as a GUI. While it *should* also currently works on Windows, V1 will make sure it does!<br>
+V1 will include a session save as well as a GUI.<br>
 I'm planning something big for the V1, but you can still refer to the `Bugs / Update` section if you want something specific!
 
 # Didn't pwn...
