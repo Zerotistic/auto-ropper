@@ -1,3 +1,7 @@
+# V0.5
+Pwning part working better and on more cases, db fully implemented, GUI working.
+I'll probably start working on more cool stuff now that i've a good base. Like pwning more binary and working in more cases.
+
 # V0.4
 Optimized the code, added a database part although it is not currently used, it'll allow me to implement it in the future
 I also started working on the GUI part
