@@ -18,7 +18,6 @@ logging.getLogger("angr.project").disabled=True
 log = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-	
 	if os.path.exists(os.path.join(os.getcwd(), "libc")) == False:
 		os.makedirs(os.path.join(os.getcwd(), "libc"))
 	if os.path.exists(os.path.join(os.getcwd(), "database")) == False:
