@@ -24,7 +24,7 @@ if __name__ == "__main__":
 		os.makedirs(os.path.join(os.getcwd(), "database"))
 	if os.path.exists(os.path.join(os.getcwd()+"/database/", "database")) == False:
 		open('./database/database',"x")
-	if sys.argv[1] == "": raise ValueError("Please provide a type of attack (local, remote, gui)")
+	#if sys.argv[1] == "": raise ValueError("Please provide a type of attack (local, remote, gui)")
 	
 	parser = argparse.ArgumentParser(
 		description='Auto-ropper is a tool that aims to automate the exploitation of ROPchain.'
