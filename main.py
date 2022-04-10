@@ -24,8 +24,7 @@ if __name__ == "__main__":
 		os.makedirs(os.path.join(os.getcwd(), "database"))
 	if os.path.exists(os.path.join(os.getcwd()+"/database/", "database")) == False:
 		open('./database/database',"x")
-	#if sys.argv[1] == "": raise ValueError("Please provide a type of attack (local, remote, gui)")
-	
+
 	parser = argparse.ArgumentParser(
 		description='Auto-ropper is a tool that aims to automate the exploitation of ROPchain.'
 		)
@@ -45,6 +44,16 @@ if __name__ == "__main__":
 	remote_attack.add_argument("-i","--ip",help="IP of remote victim")
 	remote_attack.add_argument("-p","--port",help="Port of remote victim")
 	remote_attack.set_defaults(which="remote")
+
+	ssh_attack = mode.add_parser("ssh", parents=[parser], add_help=False, description="For remote pwning via ssh")
+	ssh_attack.add_argument("-b","--binary",help="Path to binary")
+	ssh_attack.add_argument("-a","--arch",help="Arch on which the binary is")
+	ssh_attack.add_argument("-z","--printable",help="Constrain input to be printable")
+	ssh_attack.add_argument("-i","--ip",help="ssh IP of remote victim")
+	ssh_attack.add_argument("-p","--port",help="Port of victim's ssh (default: 22)", default=22)
+	ssh_attack.add_argument("-u","--username",help="Username of victim's ssh")
+	ssh_attack.add_argument("-pw","--password",help="Password of victim's ssh")
+	ssh_attack.set_defaults(which="ssh")
 
 	gui = mode.add_parser("gui", parents=[parser], add_help=False, description="Launch GUI")
 	gui.set_defaults(which="gui")
