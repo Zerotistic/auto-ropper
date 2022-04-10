@@ -50,12 +50,13 @@ if __name__ == "__main__":
 	gui.set_defaults(which="gui")
 
 	args = parser.parse_args()
-
+	
 	if args.which == "gui":
 		Gui()
 	
 	elif not args.binary:
 		log.warning("No binary given... Please provide one.")
 		exit(0)
+
 	attack = Exploit({k:v for k,v in args.__dict__.items() if v is not None})
 	attack.main()
