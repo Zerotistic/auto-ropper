@@ -1,5 +1,4 @@
 angr==9.1.11611
-beautifulsoup4==4.10.0
 claripy==9.1.11611
 pwn==1.0
 pwntools==4.7.0
