@@ -4,6 +4,7 @@ from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
 from pathlib import Path
 from .exploit import Exploit
+import re
 
 class Gui(Exploit):
 	def __init__(self):
@@ -16,13 +17,11 @@ class Gui(Exploit):
 		This function is used to create the GUI for the program.
 		"""
 		self.root.title("GUI")
-		width=228
-		height=311
-		screenwidth = self.root.winfo_screenwidth()
-		screenheight = self.root.winfo_screenheight()
-		alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+		width=240
+		height=450
+		alignstr = '%dx%d+%d+%d' % (width, height, width, height)
 		self.root.geometry(alignstr)
-		self.root.resizable(width=False, height=False)
+		self.root.resizable(width=True, height=True)
 
 		brn_run=tk.Button(self.root)
 		brn_run["bg"] = "#efefef"
@@ -109,13 +108,8 @@ class Gui(Exploit):
 		"""
 		It creates a text box for the user to input the IP address and port number of the remote computer.
 		"""
-		self.ipvar = tk.StringVar()
-		self.portvar = tk.StringVar()
-		ip = tk.Entry(master=self.root, textvariable=self.ipvar, width = 10)
-		ip.pack(padx=0, pady=195)
-		port = tk.Entry(master=self.root, textvariable=self.portvar, width = 5)
-		port.pack(padx=150, pady=205)
-		print(f"{self.ipvar.get()}{self.portvar.get()}")
+		self.addr = tk.StringVar()
+		tk.Entry(master=self.root, textvariable=self.addr, width = 10).pack(padx=0, pady=218)
 
 	def clean_mode(self):
 		pass
@@ -126,11 +120,20 @@ class Gui(Exploit):
 
 	def btn_run_exec(self):
 		if not self.args["binary"]: 
-			tkinter.messagebox.showinfo("Error cannot run",  "Please add a binary")
+			tk.messagebox.showinfo("Error cannot run",  "Please add a binary")
 			self.main()
 		elif not self.args["mode"] : 
-			tkinter.messagebox.showinfo("Error cannot run",  "Please add a mode (local, remote, ssh)")
+			tk.messagebox.showinfo("Error cannot run",  "Please add a mode (local, remote, ssh)")
 			self.main()
+		if self.args["mode"] == "remote":
+			print(self.addr.get())
+			if not re.match("\\d{1,3}(?:\\.\\d{1,3}){3}(?::\\d{1,5})?", self.addr.get()):
+				tk.messagebox.showinfo("Error cannot run",  "Please add a remote address and port")
+				self.main()
+			else:
+				self.args["ip"] = (self.addr.get()).split(":")[0]
+				self.args["port"] = (self.addr.get()).split(":")[1]
+
 		self.root.destroy()
 		attack = Exploit({k:v for k,v in self.args.items() if v is not None})
 		attack.main()
