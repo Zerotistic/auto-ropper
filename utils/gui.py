@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.font as tkFont
-import tkinter.messagebox 
+from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
 from pathlib import Path
 from .exploit import Exploit
@@ -83,7 +83,13 @@ class Gui(Exploit):
 		dd_mode["justify"] = "center"
 		dd_mode.place(x=30,y=170,width=180,height=30) 
 
+		self.root.protocol("WM_DELETE_WINDOW", self.close)
 		self.root.mainloop()
+
+	def close(self):
+		if messagebox.askokcancel("Quit", "Do you want to quit?"):
+			self.root.destroy()
+			exit(0)
 
 	def set_mode(self, var):
 		"""
@@ -98,7 +104,7 @@ class Gui(Exploit):
 			self.ssh_mode()
 		elif self.args["mode"] == "local":
 			self.clean_mode()
-	# to fix
+
 	def remote_mode(self):
 		"""
 		It creates a text box for the user to input the IP address and port number of the remote computer.
@@ -119,18 +125,21 @@ class Gui(Exploit):
 
 
 	def btn_run_exec(self):
-		if not self.args["binary"]: tkinter.messagebox.showinfo("Error cannot run",  "Please add a binary")
-		elif not self.args["mode"] : tkinter.messagebox.showinfo("Error cannot run",  "Please add a mode (local, remote, ssh)")
+		if not self.args["binary"]: 
+			tkinter.messagebox.showinfo("Error cannot run",  "Please add a binary")
+			self.main()
+		elif not self.args["mode"] : 
+			tkinter.messagebox.showinfo("Error cannot run",  "Please add a mode (local, remote, ssh)")
+			self.main()
 		self.root.destroy()
 		attack = Exploit({k:v for k,v in self.args.items() if v is not None})
 		attack.main()
-
 		
 	def btn_bin_exec(self):
 		"""
 		It opens a file browser and asks the user to select a binary file.
 		"""
-		self.args["binary"] = askopenfilename()
+		self.args["binary"] = askopenfilename(title="Select a binary file")
 		self.args["binary"] = self.args["binary"].replace(str(Path("./").resolve()),"")[1:]
 
 	def btn_libc_exec(self):
@@ -138,7 +147,7 @@ class Gui(Exploit):
 		It opens a file dialog and asks the user to select a file.
 		The file is then stored in the args dictionary.
 		"""
-		self.args["libc"] = askopenfilename()
+		self.args["libc"] = askopenfilename(title="Select a libc file")
 		self.args["libc"] = self.args["libc"].replace(str(Path("./").resolve()),"")[1:]
 
 	def checkbox_printable(self):
@@ -146,4 +155,4 @@ class Gui(Exploit):
 		The checkbox_printable function is a function that takes no arguments. It is called when the
 		checkbox is clicked. It toggles the value of the is_printable_var variable
 		"""
-		self.args["is_printable"] = not self.is_printable_var
+		self.args["is_printable"] = not self.args["is_printable"]
