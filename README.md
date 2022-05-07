@@ -1,6 +1,10 @@
 # Auto-Ropper V0.5
 Auto-ropper is a tool that aims to automate the exploitation of ROPchain (for now). Its goal is to become a tool that no longer requires user interaction.
 
+# Informations
+I'm still working on this project, however i made it private. I may or may not make it public later. You can still create issue and pull request.
+
+
 # Installation
 You can simply do:
 ```
