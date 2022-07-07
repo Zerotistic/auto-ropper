@@ -1,5 +1,6 @@
 # Auto-pwner
-pwn is annoying so i made a tool for it
+pwn is annoying so i made a tool for it<br>
+i'm probably giving up on this project but pull requests are welcome
 
 # install 
 ```
