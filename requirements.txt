@@ -2,5 +2,6 @@ angr==9.1.11611
 claripy==9.1.11611
 pwn==1.0
 pwntools==4.7.0
-requests==2.27.1
+r2pipe==1.6.5
+requests==2.22.0
 timeout_decorator==0.5.0
